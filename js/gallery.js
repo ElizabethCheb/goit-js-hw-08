@@ -65,25 +65,29 @@ document.addEventListener("DOMContentLoaded", function() {
         },
       ];
       const galleryContainer = document.querySelector('.gallery');
-      galleryContainer.addEventListener('click', onGalleryItemClick);
-      let currentLightboxInstance = null;
+    let currentLightboxInstance = null;
     function onGalleryItemClick(event) {
       event.preventDefault();
-    
       if (event.target.nodeName !== 'IMG') {
         return;
       }
       const largeImageSrc = event.target.dataset.source;
       currentLightboxInstance = basicLightbox.create(`
-        <img src="${largeImageSrc}" width="800" height="600">
-      `);
+        <img src="${largeImageSrc}" width="800" height="600">`, 
+        {onShow: () => {
+          document.addEventListener('keydown', onKeyPress);
+        },
+        onClose: () => {
+          document.removeEventListener('keydown', onKeyPress);
+        },
+      });
       currentLightboxInstance.show();
     }
-    document.addEventListener('keydown', onKeyPress);
     function onKeyPress(event) {
       if (event.key === 'Escape' && currentLightboxInstance && currentLightboxInstance.visible) {
         currentLightboxInstance.close();
         currentLightboxInstance = null;
       }
     }
-    });
+    galleryContainer.addEventListener('click', onGalleryItemClick);
+});
